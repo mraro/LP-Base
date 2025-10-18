@@ -1,12 +1,12 @@
 export const siteConfig = {
-  name: "Sua Empresa",
-  description: "Transforme seu negócio com nossas soluções",
-  url: "https://seusite.com.br",
+  name: "3S Cars",
+  description: "Transforme sua paixão por carros em R$10 mil por mês com estética automotiva",
+  url: "https://3scars.com.br",
 
   // Customização visual
   theme: {
-    primaryColor: "#0066FF",
-    secondaryColor: "#FF6B00",
+    primaryColor: "#ea580c", // Orange-600
+    secondaryColor: "#f97316", // Orange-500
     fontFamily: "Inter",
   },
 
@@ -43,17 +43,17 @@ export const siteConfig = {
     fields: {
       name: {
         label: "Nome Completo",
-        placeholder: "João Silva",
+        placeholder: "Digite seu nome completo",
         required: true,
       },
       email: {
         label: "E-mail",
-        placeholder: "joao@exemplo.com",
+        placeholder: "seu@email.com",
         required: true,
       },
       phone: {
         label: "Telefone",
-        placeholder: "(11) 99999-9999",
+        placeholder: "(51) 99999-9999",
         required: true,
       },
       message: {
@@ -69,17 +69,17 @@ export const siteConfig = {
 
   // Contato
   contact: {
-    email: "contato@suaempresa.com",
-    phone: "(11) 99999-9999",
-    whatsapp: "5511999999999",
-    address: "São Paulo, SP",
+    email: "3scarsscs@gmail.com",
+    phone: "(51) 99853-5411",
+    whatsapp: "5551998535411",
+    address: "Santa Cruz do Sul - RS",
   },
 
   // Social Media
   social: {
-    instagram: "https://instagram.com/suaempresa",
-    facebook: "https://facebook.com/suaempresa",
-    linkedin: "https://linkedin.com/company/suaempresa",
+    instagram: "https://instagram.com/3scars_scs",
+    facebook: "https://facebook.com/3scarsscs",
+    linkedin: "",
   },
 }
 

@@ -10,7 +10,15 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
-  keywords: ["landing page", "negócios", "soluções", "marketing"],
+  keywords: [
+    "estética automotiva",
+    "detalhamento veicular",
+    "polimento automotivo",
+    "curso detalhamento",
+    "empreendedorismo automotivo",
+    "3s cars",
+    "santa cruz do sul",
+  ],
   authors: [{ name: siteConfig.name }],
   openGraph: {
     title: siteConfig.name,
@@ -18,6 +26,7 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     siteName: siteConfig.name,
     type: "website",
+    locale: "pt_BR",
   },
   twitter: {
     card: "summary_large_image",

@@ -1,8 +1,16 @@
+import { auth } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Code2, Copy, CheckCircle2, AlertCircle } from "lucide-react";
 import { trackingConfig } from "@/config/tracking.config";
 
-export default function TrackingSetupPage() {
+export default async function TrackingSetupPage() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/admin/login");
+  }
+
   const hasMetaPixel = !!trackingConfig.metaPixelId;
   const hasGoogleAnalytics = !!trackingConfig.googleAnalyticsId;
   const hasGoogleAds =
@@ -116,7 +124,7 @@ export default function TrackingSetupPage() {
               <li>Acesse o Meta Events Manager</li>
               <li>Selecione seu Pixel</li>
               <li>Vá em Configurações {">"} Conversões</li>
-              <li>O evento "Lead" já está sendo enviado automaticamente</li>
+              <li>O evento &quot;Lead&quot; já está sendo enviado automaticamente</li>
               <li>Configure regras de conversão conforme necessário</li>
             </ol>
           </div>
@@ -155,7 +163,7 @@ export default function TrackingSetupPage() {
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
               <li>Acesse o Google Analytics</li>
               <li>Vá em Relatórios {">"} Conversões</li>
-              <li>Configure "generate_lead" como evento de conversão</li>
+              <li>Configure &quot;generate_lead&quot; como evento de conversão</li>
               <li>Visualize os dados em tempo real</li>
             </ol>
           </div>

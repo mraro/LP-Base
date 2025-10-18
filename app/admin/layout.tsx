@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth/auth";
-import { redirect } from "next/navigation";
 import AdminNav from "./_components/admin-nav";
 
 export default async function AdminLayout({
@@ -9,15 +8,12 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (!session && !children.toString().includes("login")) {
-    redirect("/admin/login");
-  }
-
-  // If on login page, don't show nav
+  // If not authenticated, show children (login page will handle its own logic)
   if (!session) {
     return <>{children}</>;
   }
 
+  // If authenticated, show admin layout with navigation
   return (
     <div className="min-h-screen bg-muted/30">
       <AdminNav />

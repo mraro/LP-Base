@@ -1,6 +1,6 @@
 {
-  "name": "base-lp",
-  "version": "0.1.0",
+  "name": "3s-cars-landing-page",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +13,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "@supabase/supabase-js": "^2.39.0",
-    "@supabase/auth-helpers-nextjs": "^0.9.0",
+    "@supabase/ssr": "^0.5.2",
     "next-auth": "^5.0.0-beta.4",
     "framer-motion": "^11.0.0",
     "gsap": "^3.12.5",
@@ -33,20 +33,20 @@
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
-    "lucide-react": "^0.344.0",
+    "lucide-react": "^0.468.0",
     "date-fns": "^3.3.0",
     "recharts": "^2.12.0",
-    "bcryptjs": "^2.4.3",
-    "@supabase/ssr": "^0.1.0"
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "typescript": "^5",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-config-next": "^15.0.0",
     "postcss": "^8",
+    "autoprefixer": "^10.4.20",
     "tailwindcss": "^3.4.1",
     "prettier": "^3.2.0",
     "@tailwindcss/forms": "^0.5.7",

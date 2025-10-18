@@ -35,3 +35,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.claude
+
+# JITD - Context markers (session-specific, don't commit)
+.agent/.context-markers/*.md
+.vercel

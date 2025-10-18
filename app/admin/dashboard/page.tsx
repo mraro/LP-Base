@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, TrendingUp, Mail, Calendar } from "lucide-react";
@@ -63,6 +64,11 @@ async function getStats(clientId: string) {
 
 export default async function DashboardPage() {
   const session = await auth();
+
+  if (!session) {
+    redirect("/admin/login");
+  }
+
   const clientId = (session?.user as any)?.clientId || "default";
 
   const stats = await getStats(clientId);

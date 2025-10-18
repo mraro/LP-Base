@@ -1,13 +1,11 @@
-import HeroSection from "./_components/hero-section";
-import FeaturesSection from "./_components/features-section";
-import CTASection from "./_components/cta-section";
+import CourseCapturePage from "./_components/course-capture-page";
+
+export const metadata = {
+  title: "Aprenda a Faturar Hoje com Estética Automotiva | 3S Cars",
+  description:
+    "Transforme sua paixão por carros em R$10 mil por mês. Descubra o Método 3SCAR com linguagem prática e metodologia testada. Do zero aos primeiros clientes.",
+};
 
 export default function Home() {
-  return (
-    <main className="min-h-screen">
-      <HeroSection />
-      <FeaturesSection />
-      <CTASection />
-    </main>
-  );
+  return <CourseCapturePage />;
 }
