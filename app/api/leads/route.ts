@@ -26,7 +26,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     // Insert lead into database
-    const { data: lead, error: leadError } = await supabase
+    // Nota: Não usamos .select() porque RLS bloqueia SELECT para anônimos
+    // O INSERT funciona graças à policy "Anyone can insert leads"
+    const { error: leadError } = await supabase
       .from("leads")
       .insert({
         name: validatedData.name,
@@ -39,44 +41,20 @@ export async function POST(request: NextRequest) {
         ip_address: ip,
         user_agent: userAgent,
         client_id: trackingConfig.clientId,
-      })
-      .select()
-      .single();
+      });
 
     if (leadError) {
       console.error("Error inserting lead:", leadError);
       throw new Error("Failed to save lead");
     }
 
-    // Track conversion
-    const { error: conversionError } = await supabase
-      .from("conversions")
-      .insert({
-        lead_id: lead.id,
-        event_name: "Lead",
-        value: 0,
-        currency: "BRL",
-        fbc: fbclid ? `fb.1.${Date.now()}.${fbclid}` : null,
-        gclid: gclid || null,
-      });
-
-    if (conversionError) {
-      console.error("Error tracking conversion:", conversionError);
-      // Don't throw error, conversion tracking is not critical
-    }
-
-    // Send webhook notification (optional - add your webhook URL)
-    // await fetch("YOUR_WEBHOOK_URL", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ lead }),
-    // });
+    // Tracking de conversão será feito via triggers no Supabase ou client-side
+    // pois não temos o lead.id após INSERT com RLS
 
     return NextResponse.json(
       {
         success: true,
         message: "Lead captured successfully",
-        leadId: lead.id,
       },
       { status: 201 }
     );
