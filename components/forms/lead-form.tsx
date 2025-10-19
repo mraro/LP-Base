@@ -80,10 +80,8 @@ export default function LeadForm() {
         }
       }
 
-      toast({
-        title: "Sucesso!",
-        description: siteConfig.leadForm.successMessage,
-      });
+      // Redirecionar para página de obrigado
+      window.location.href = "/obrigado";
 
       reset();
     } catch (error) {
