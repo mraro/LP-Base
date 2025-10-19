@@ -1,9 +1,11 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import bcrypt from "bcryptjs";
 
 export const authConfig: NextAuthConfig = {
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  trustHost: true, // Detecta automaticamente a URL baseada no request (localhost ou produção)
   pages: {
     signIn: "/admin/login",
   },
@@ -15,37 +17,60 @@ export const authConfig: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("🔐 [AUTH] Iniciando autenticação...");
+
         if (!credentials?.email || !credentials?.password) {
+          console.log("❌ [AUTH] Credenciais ausentes");
           return null;
         }
 
-        const supabase = await createClient();
+        console.log(`📧 [AUTH] Email: ${credentials.email}`);
 
-        const { data: admin, error } = await supabase
-          .from("admins")
-          .select("*")
-          .eq("email", credentials.email as string)
-          .single();
+        try {
+          // Usa SERVICE_ROLE_KEY para bypass RLS na autenticação
+          const supabase = createAdminClient();
 
-        if (error || !admin) {
+          const { data: admin, error } = await supabase
+            .from("admins")
+            .select("*")
+            .eq("email", credentials.email as string)
+            .single();
+
+          if (error) {
+            console.log("❌ [AUTH] Erro ao buscar admin:", error.message);
+            return null;
+          }
+
+          if (!admin) {
+            console.log("❌ [AUTH] Admin não encontrado");
+            return null;
+          }
+
+          console.log(`✅ [AUTH] Admin encontrado - Client ID: ${admin.client_id}`);
+
+          // Verify password
+          console.log("🔍 [AUTH] Verificando senha...");
+          const isValidPassword = await bcrypt.compare(
+            credentials.password as string,
+            admin.password_hash
+          );
+
+          if (!isValidPassword) {
+            console.log("❌ [AUTH] Senha inválida");
+            return null;
+          }
+
+          console.log("✅ [AUTH] Senha válida! Login bem-sucedido");
+
+          return {
+            id: admin.id,
+            email: admin.email,
+            clientId: admin.client_id,
+          };
+        } catch (err) {
+          console.error("❌ [AUTH] Erro durante autenticação:", err);
           return null;
         }
-
-        // Verify password
-        const isValidPassword = await bcrypt.compare(
-          credentials.password as string,
-          admin.password_hash
-        );
-
-        if (!isValidPassword) {
-          return null;
-        }
-
-        return {
-          id: admin.id,
-          email: admin.email,
-          clientId: admin.client_id,
-        };
       },
     }),
   ],

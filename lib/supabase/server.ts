@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -31,6 +32,23 @@ export async function createClient() {
           }
         },
       },
+    }
+  )
+}
+
+/**
+ * Cliente Supabase para autenticação (usa SERVICE_ROLE_KEY para bypass RLS)
+ * Usado apenas no NextAuth authorize() para verificar credenciais de admin
+ */
+export function createAdminClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
   )
 }
