@@ -1,39 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { trackingConfig } from "@/config/tracking.config";
+import { trackCapiPageView } from "@/lib/tracking/facebook-capi-client";
 
 export default function MetaPixel() {
   const pixelId = trackingConfig.metaPixelId;
+  const isCapiMode = trackingConfig.metaCapi.enabled;
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (!pixelId) return;
+    // Garantir que está no cliente antes de carregar scripts
+    setIsClient(true);
 
-    // Initialize Meta Pixel
-    if (typeof window !== "undefined") {
-      (window as any).fbq =
-        (window as any).fbq ||
-        function () {
-          ((window as any).fbq.q = (window as any).fbq.q || []).push(arguments);
-        };
-      (window as any).fbq.loaded = true;
-      (window as any).fbq.version = "2.0";
-      (window as any).fbq.queue = [];
-
-      // Track PageView
-      (window as any).fbq("init", pixelId);
-      (window as any).fbq("track", "PageView");
+    // Se CAPI está habilitado, usar CAPI em vez de Pixel browser
+    if (isCapiMode && isClient) {
+      trackCapiPageView();
     }
-  }, [pixelId]);
+  }, [isCapiMode, isClient]);
 
-  if (!pixelId) return null;
+  // Se CAPI está habilitado, NÃO carrega Pixel browser
+  if (isCapiMode) {
+    console.log("🚀 CAPI Mode: Using server-side tracking instead of Pixel");
+    return null;
+  }
+
+  if (!pixelId || !isClient) return null;
 
   return (
     <>
       <Script
         id="meta-pixel"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
             !function(f,b,e,v,n,t,s)

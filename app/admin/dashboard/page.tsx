@@ -1,26 +1,24 @@
 import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, TrendingUp, Mail, Calendar } from "lucide-react";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-async function getStats(clientId: string) {
-  const supabase = await createClient();
+async function getStats() {
+  const supabase = createAdminClient();
 
   // Total leads
   const { count: totalLeads } = await supabase
     .from("leads")
-    .select("*", { count: "exact", head: true })
-    .eq("client_id", clientId);
+    .select("*", { count: "exact", head: true });
 
   // Leads today
   const today = new Date();
   const { count: leadsToday } = await supabase
     .from("leads")
     .select("*", { count: "exact", head: true })
-    .eq("client_id", clientId)
     .gte("created_at", startOfDay(today).toISOString())
     .lte("created_at", endOfDay(today).toISOString());
 
@@ -29,14 +27,12 @@ async function getStats(clientId: string) {
   const { count: leadsThisWeek } = await supabase
     .from("leads")
     .select("*", { count: "exact", head: true })
-    .eq("client_id", clientId)
     .gte("created_at", weekAgo.toISOString());
 
   // Leads by source
   const { data: leadsBySource } = await supabase
     .from("leads")
     .select("source")
-    .eq("client_id", clientId)
     .not("source", "is", null);
 
   const sourceCount: Record<string, number> = {};
@@ -49,7 +45,6 @@ async function getStats(clientId: string) {
   const { data: recentLeads } = await supabase
     .from("leads")
     .select("*")
-    .eq("client_id", clientId)
     .order("created_at", { ascending: false })
     .limit(5);
 
@@ -69,9 +64,7 @@ export default async function DashboardPage() {
     redirect("/admin/login");
   }
 
-  const clientId = (session?.user as any)?.clientId || "default";
-
-  const stats = await getStats(clientId);
+  const stats = await getStats();
 
   return (
     <div className="space-y-8">

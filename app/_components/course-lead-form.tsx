@@ -71,8 +71,8 @@ export default function CourseLeadForm() {
         },
         body: JSON.stringify({
           ...data,
-          message: "Lead do Curso de Detalhamento Veicular",
-          source: utmSource || "curso-page",
+          message: "Lead capturado da lp",
+          source: utmSource || "organico",
           medium: utmMedium,
           campaign: utmCampaign,
           fbclid,
@@ -107,19 +107,7 @@ export default function CourseLeadForm() {
       }
 
       setIsSuccess(true);
-
-      toast({
-        title: "Inscrição Confirmada!",
-        description:
-          "Em breve você receberá todas as informações no seu email.",
-      });
-
       reset();
-
-      // Reset success state after 5 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
@@ -134,38 +122,39 @@ export default function CourseLeadForm() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {isSuccess ? (
-        <motion.div
-          key="success"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="py-8 text-center"
-        >
+    <div className="space-y-5">
+      <AnimatePresence mode="wait">
+        {isSuccess ? (
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 mx-auto"
+            key="success"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="py-8 text-center"
           >
-            <CheckCircle2 className="h-10 w-10 text-green-600" />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 mx-auto"
+            >
+              <CheckCircle2 className="h-10 w-10 text-green-600" />
+            </motion.div>
+            <h4 className="mt-4 text-xl font-bold text-gray-900">
+              Inscrição Confirmada!
+            </h4>
+            <p className="mt-2 text-sm text-gray-600">
+              Em breve entraremos em contato com você.
+            </p>
           </motion.div>
-          <h4 className="mt-4 text-xl font-bold text-gray-900">
-            Inscrição Confirmada!
-          </h4>
-          <p className="mt-2 text-sm text-gray-600">
-            Verifique seu email para acessar o conteúdo exclusivo do curso.
-          </p>
-        </motion.div>
-      ) : (
-        <motion.form
-          key="form"
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+        ) : (
+          <motion.form
+            key="form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
           {/* Name Field */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
@@ -294,7 +283,8 @@ export default function CourseLeadForm() {
             <span>Inscreva-se agora e receba acesso imediato</span>
           </motion.div>
         </motion.form>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

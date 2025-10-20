@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS leads (
   campaign VARCHAR(100),         -- utm_campaign
   ip_address INET,
   user_agent TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  client_id VARCHAR(100) NOT NULL DEFAULT 'default'
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Tabela de Conversões (para tracking)
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS admins (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  client_id VARCHAR(100) NOT NULL DEFAULT 'default',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -51,7 +49,6 @@ CREATE TABLE IF NOT EXISTS tracking_config (
 -- Indexes para performance
 CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_leads_client_id ON leads(client_id);
 CREATE INDEX IF NOT EXISTS idx_conversions_lead_id ON conversions(lead_id);
 CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
 CREATE INDEX IF NOT EXISTS idx_tracking_config_client_id ON tracking_config(client_id);
@@ -66,34 +63,19 @@ ALTER TABLE tracking_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can insert leads" ON leads
   FOR INSERT WITH CHECK (true);
 
--- Policy para admins verem apenas seus leads
-CREATE POLICY "Admins can view their client leads" ON leads
-  FOR SELECT USING (
-    client_id IN (
-      SELECT client_id FROM admins WHERE email = auth.jwt() ->> 'email'
-    )
-  );
-
 -- Policy para conversions
 CREATE POLICY "Anyone can insert conversions" ON conversions
   FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Admins can view conversions of their leads" ON conversions
-  FOR SELECT USING (
-    lead_id IN (
-      SELECT id FROM leads WHERE client_id IN (
-        SELECT client_id FROM admins WHERE email = auth.jwt() ->> 'email'
-      )
-    )
-  );
+  FOR SELECT USING (true);
 
 -- Seed inicial (admin padrão - senha: admin123)
 -- IMPORTANTE: Alterar a senha após o primeiro login!
-INSERT INTO admins (email, password_hash, client_id)
+INSERT INTO admins (email, password_hash)
 VALUES (
   'admin@example.com',
-  '$2a$10$rK5JLJ5z5z5z5z5z5z5z5uX5YqJ5z5z5z5z5z5z5z5z5z5z5z5z5z',
-  'default'
+  '$2a$10$rK5JLJ5z5z5z5z5z5z5z5uX5YqJ5z5z5z5z5z5z5z5z5z5z5z5z5z'
 ) ON CONFLICT (email) DO NOTHING;
 
 -- Seed de tracking config padrão

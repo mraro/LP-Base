@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/config/site.config";
-import AnalyticsWrapper from "@/components/tracking/analytics-wrapper";
+import SafeAnalytics from "@/components/tracking/safe-analytics";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -47,9 +47,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body className={inter.className}>
-        <AnalyticsWrapper />
         {children}
         <Toaster />
+        <SafeAnalytics />
       </body>
     </html>
   );

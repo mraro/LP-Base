@@ -22,7 +22,6 @@ export interface Database {
           ip_address: string | null
           user_agent: string | null
           created_at: string
-          client_id: string
         }
         Insert: {
           id?: string
@@ -36,7 +35,6 @@ export interface Database {
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
-          client_id: string
         }
         Update: {
           id?: string
@@ -50,7 +48,6 @@ export interface Database {
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
-          client_id?: string
         }
       }
       conversions: {
@@ -93,21 +90,18 @@ export interface Database {
           id: string
           email: string
           password_hash: string
-          client_id: string
           created_at: string
         }
         Insert: {
           id?: string
           email: string
           password_hash: string
-          client_id: string
           created_at?: string
         }
         Update: {
           id?: string
           email?: string
           password_hash?: string
-          client_id?: string
           created_at?: string
         }
       }

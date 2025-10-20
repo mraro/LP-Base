@@ -46,7 +46,7 @@ export const authConfig: NextAuthConfig = {
             return null;
           }
 
-          console.log(`✅ [AUTH] Admin encontrado - Client ID: ${admin.client_id}`);
+          console.log(`✅ [AUTH] Admin encontrado`);
 
           // Verify password
           console.log("🔍 [AUTH] Verificando senha...");
@@ -65,7 +65,6 @@ export const authConfig: NextAuthConfig = {
           return {
             id: admin.id,
             email: admin.email,
-            clientId: admin.client_id,
           };
         } catch (err) {
           console.error("❌ [AUTH] Erro durante autenticação:", err);
@@ -78,14 +77,12 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.clientId = (user as any).clientId;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
-        (session.user as any).clientId = token.clientId;
       }
       return session;
     },

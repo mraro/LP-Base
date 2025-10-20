@@ -1,22 +1,28 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { trackingConfig } from "@/config/tracking.config";
 
 export default function GoogleAnalytics() {
   const gaId = trackingConfig.googleAnalyticsId;
+  const [isClient, setIsClient] = useState(false);
 
-  if (!gaId) return null;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!gaId || !isClient) return null;
 
   return (
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
       <Script
         id="google-analytics"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];

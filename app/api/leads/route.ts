@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { leadFormSchema } from "@/lib/validators";
 import { trackingConfig } from "@/config/tracking.config";
+import { sendLeadEvent } from "@/lib/tracking/facebook-capi";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +23,9 @@ export async function POST(request: NextRequest) {
     // Get user agent
     const userAgent = request.headers.get("user-agent") || "unknown";
 
+    // Define source: se não vier de plataforma (utm_source, fbclid, gclid), marca como "organico"
+    const finalSource = source || fbclid || gclid ? source : "organico";
+
     // Create Supabase client
     const supabase = await createClient();
 
@@ -35,12 +39,11 @@ export async function POST(request: NextRequest) {
         email: validatedData.email,
         phone: validatedData.phone,
         message: validatedData.message || null,
-        source: source || null,
+        source: finalSource,
         medium: medium || null,
         campaign: campaign || null,
         ip_address: ip,
         user_agent: userAgent,
-        client_id: trackingConfig.clientId,
       });
 
     if (leadError) {
@@ -48,8 +51,21 @@ export async function POST(request: NextRequest) {
       throw new Error("Failed to save lead");
     }
 
-    // Tracking de conversão será feito via triggers no Supabase ou client-side
-    // pois não temos o lead.id após INSERT com RLS
+    // CAPI Tracking: Se habilitado, envia evento Lead para Facebook (server-side)
+    if (trackingConfig.metaCapi.enabled) {
+      // Pega cookies do Facebook para matching (se enviados pelo client)
+      const { fbc, fbp } = body;
+
+      await sendLeadEvent(validatedData.email, validatedData.phone, {
+        clientIp: ip,
+        userAgent,
+        fbc: fbc || fbclid, // Facebook Click ID
+        fbp, // Facebook Browser ID
+        eventSourceUrl: request.headers.get("referer") || undefined,
+      });
+
+      console.log("✅ CAPI Lead event sent for:", validatedData.email);
+    }
 
     return NextResponse.json(
       {
@@ -89,7 +105,6 @@ export async function GET(request: NextRequest) {
     const { data: leads, error } = await supabase
       .from("leads")
       .select("*")
-      .eq("client_id", trackingConfig.clientId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 

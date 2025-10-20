@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Mail, Phone, Calendar, Globe } from "lucide-react";
@@ -8,13 +8,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ExportLeadsButton from "../_components/export-leads-button";
 
-async function getLeads(clientId: string) {
-  const supabase = await createClient();
+async function getLeads() {
+  const supabase = createAdminClient();
 
   const { data: leads, error } = await supabase
     .from("leads")
     .select("*")
-    .eq("client_id", clientId)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -32,9 +31,7 @@ export default async function LeadsPage() {
     redirect("/admin/login");
   }
 
-  const clientId = (session?.user as any)?.clientId || "default";
-
-  const leads = await getLeads(clientId);
+  const leads = await getLeads();
 
   return (
     <div className="space-y-8">
@@ -89,13 +86,6 @@ export default async function LeadsPage() {
                           >
                             {lead.phone}
                           </a>
-                        </div>
-                      )}
-
-                      {lead.message && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Mensagem</p>
-                          <p className="text-sm">{lead.message}</p>
                         </div>
                       )}
                     </div>

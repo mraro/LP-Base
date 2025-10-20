@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { leadFormSchema, type LeadFormData } from "@/lib/validators";
 import { siteConfig } from "@/config/site.config";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function LeadForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,6 +40,22 @@ export default function LeadForm() {
       const fbclid = urlParams.get("fbclid");
       const gclid = urlParams.get("gclid");
 
+      // Get Facebook cookies for CAPI matching
+      const getFacebookCookies = () => {
+        const cookies = document.cookie.split("; ").reduce((acc, cookie) => {
+          const [key, value] = cookie.split("=");
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>);
+
+        return {
+          fbc: cookies._fbc,
+          fbp: cookies._fbp,
+        };
+      };
+
+      const fbCookies = getFacebookCookies();
+
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: {
@@ -52,6 +68,9 @@ export default function LeadForm() {
           campaign: utmCampaign,
           fbclid,
           gclid,
+          // Facebook cookies para CAPI
+          fbc: fbCookies.fbc,
+          fbp: fbCookies.fbp,
         }),
       });
 
@@ -81,9 +100,9 @@ export default function LeadForm() {
         }
       }
 
-      // Mostrar mensagem de sucesso
+      // Mostrar mensagem de sucesso (não resetar formulário)
       setShowSuccess(true);
-      reset();
+      // reset(); // Removido - causava o formulário voltar
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({

@@ -55,6 +55,7 @@ export default function CourseCapturePage() {
 
                 {/* Subtle border glow on hover */}
                 <div className="pointer-events-none absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-orange-400/20 via-amber-400/20 to-yellow-400/20 opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-100" />
+
                 {/* Form Header */}
                 <div className="relative z-10 mb-5 text-center md:mb-6">
                   <motion.div
@@ -132,6 +133,7 @@ export default function CourseCapturePage() {
                       src="/images/logo.jpg"
                       alt="3S Cars Logo"
                       fill
+                      sizes="(max-width: 768px) 64px, 80px"
                       className="rounded-full object-cover shadow-2xl shadow-orange-500/30 ring-2 ring-orange-500/20"
                       priority
                     />
