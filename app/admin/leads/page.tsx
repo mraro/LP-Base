@@ -1,12 +1,9 @@
 import { auth } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download, Mail, Phone, Calendar, Globe } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ExportLeadsButton from "../_components/export-leads-button";
+import { LeadsTable } from "../_components/leads-table";
 
 async function getLeads() {
   const supabase = createAdminClient();
@@ -33,119 +30,93 @@ export default async function LeadsPage() {
 
   const leads = await getLeads();
 
+  // Calcular estatísticas
+  const totalLeads = leads.length;
+  const leadsHoje = leads.filter((lead) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const leadDate = new Date(lead.created_at);
+    return leadDate >= hoje;
+  }).length;
+
+  const fontes = leads.reduce((acc: Record<string, number>, lead) => {
+    const fonte = lead.source || "direto";
+    acc[fonte] = (acc[fonte] || 0) + 1;
+    return acc;
+  }, {});
+
+  const fontePrincipal = Object.entries(fontes).sort((a, b) => b[1] - a[1])[0];
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Leads</h1>
           <p className="text-muted-foreground">
-            Gerencie todos os leads capturados pela landing page
+            {totalLeads} {totalLeads === 1 ? "lead capturado" : "leads capturados"}
           </p>
         </div>
         <ExportLeadsButton leads={leads} />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Todos os Leads ({leads.length})</CardTitle>
-          <CardDescription>
-            Lista completa de todos os leads capturados
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {leads.length > 0 ? (
-            <div className="space-y-4">
-              {leads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="p-6 border rounded-lg hover:shadow-md transition-shadow"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Nome</p>
-                        <p className="font-semibold text-lg">{lead.name}</p>
-                      </div>
+      {/* Estatísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total de Leads
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{totalLeads}</p>
+          </CardContent>
+        </Card>
 
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Mail className="w-4 h-4" />
-                        <a
-                          href={`mailto:${lead.email}`}
-                          className="hover:text-primary transition-colors"
-                        >
-                          {lead.email}
-                        </a>
-                      </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Leads Hoje
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{leadsHoje}</p>
+          </CardContent>
+        </Card>
 
-                      {lead.phone && (
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Phone className="w-4 h-4" />
-                          <a
-                            href={`tel:${lead.phone}`}
-                            className="hover:text-primary transition-colors"
-                          >
-                            {lead.phone}
-                          </a>
-                        </div>
-                      )}
-                    </div>
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Principal Fonte
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {fontePrincipal ? (
+              <div>
+                <p className="text-2xl font-bold capitalize">{fontePrincipal[0]}</p>
+                <p className="text-sm text-muted-foreground">{fontePrincipal[1]} leads</p>
+              </div>
+            ) : (
+              <p className="text-2xl font-bold">-</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>
-                          {format(new Date(lead.created_at), "dd/MM/yyyy 'às' HH:mm", {
-                            locale: ptBR,
-                          })}
-                        </span>
-                      </div>
-
-                      {lead.source && (
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Origem</p>
-                          <div className="flex flex-wrap gap-2">
-                            {lead.source && (
-                              <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-md">
-                                Fonte: {lead.source}
-                              </span>
-                            )}
-                            {lead.medium && (
-                              <span className="px-2 py-1 bg-secondary/10 text-secondary text-xs rounded-md">
-                                Meio: {lead.medium}
-                              </span>
-                            )}
-                            {lead.campaign && (
-                              <span className="px-2 py-1 bg-accent/10 text-accent-foreground text-xs rounded-md">
-                                Campanha: {lead.campaign}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {lead.ip_address && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Globe className="w-4 h-4" />
-                          <span>IP: {lead.ip_address}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg mb-2">
-                Nenhum lead capturado ainda
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Os leads aparecerão aqui quando alguém preencher o formulário
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Tabela de Leads */}
+      {leads.length > 0 ? (
+        <LeadsTable leads={leads} />
+      ) : (
+        <Card>
+          <CardContent className="text-center py-12">
+            <p className="text-muted-foreground text-lg mb-2">
+              Nenhum lead capturado ainda
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Os leads aparecerão aqui quando alguém preencher o formulário
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

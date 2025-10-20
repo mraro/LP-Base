@@ -11,22 +11,79 @@ export default async function TrackingSetupPage() {
     redirect("/admin/login");
   }
 
-  const hasMetaPixel = !!trackingConfig.metaPixelId;
-  const hasGoogleAnalytics = !!trackingConfig.googleAnalyticsId;
+  // Verificar se as variáveis de ambiente realmente existem (não strings vazias)
+  const hasMetaPixel = trackingConfig.metaPixelId && trackingConfig.metaPixelId.trim() !== "";
+  const hasGoogleAnalytics = trackingConfig.googleAnalyticsId && trackingConfig.googleAnalyticsId.trim() !== "";
   const hasGoogleAds =
-    !!trackingConfig.googleAds.conversionId && !!trackingConfig.googleAds.conversionLabel;
+    trackingConfig.googleAds.conversionId &&
+    trackingConfig.googleAds.conversionId.trim() !== "" &&
+    trackingConfig.googleAds.conversionLabel &&
+    trackingConfig.googleAds.conversionLabel.trim() !== "";
+  const hasMetaCapi = trackingConfig.metaCapi.enabled;
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold mb-2">Setup de Tracking</h1>
         <p className="text-muted-foreground">
-          Informações para configurar suas plataformas de anúncios
+          Informações para configurar suas campanhas de tráfego pago
         </p>
       </div>
 
+      {/* Informações para Campanha */}
+      <Card className="border-primary bg-primary/5">
+        <CardHeader>
+          <CardTitle>Informações da Campanha</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* URL e Eventos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm font-medium mb-2">URL da Landing Page</p>
+              <code className="block p-3 bg-background rounded-md font-mono text-sm">
+                https://3s-cars.com.br
+              </code>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium mb-2">Evento de Conversão</p>
+              <div className="space-y-2">
+                <code className="block p-2 bg-background rounded-md font-mono text-sm">
+                  Meta: <strong>Lead</strong>
+                </code>
+                <code className="block p-2 bg-background rounded-md font-mono text-sm">
+                  Google: <strong>generate_lead</strong>
+                </code>
+              </div>
+            </div>
+          </div>
+
+          {/* Tracking Ativo */}
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-3">Tracking Ativo</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+              <div className="p-2 bg-background rounded border">Meta Pixel</div>
+              <div className="p-2 bg-background rounded border">Meta CAPI</div>
+              <div className="p-2 bg-background rounded border">Google Analytics</div>
+              <div className="p-2 bg-background rounded border">Google Ads</div>
+            </div>
+          </div>
+
+          {/* Dados Capturados */}
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-2">Dados Capturados</p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <code className="p-2 bg-background rounded">name, email, phone</code>
+              <code className="p-2 bg-background rounded">utm_source, utm_medium, utm_campaign</code>
+              <code className="p-2 bg-background rounded">fbclid, gclid</code>
+              <code className="p-2 bg-background rounded">ip_address, user_agent</code>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">Meta Pixel</CardTitle>
@@ -36,12 +93,33 @@ export default async function TrackingSetupPage() {
               {hasMetaPixel ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-green-500 font-medium">Configurado</span>
+                  <span className="text-sm text-green-500 font-medium">Ativo</span>
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm text-yellow-500 font-medium">Não configurado</span>
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-sm text-red-500 font-medium">Inativo</span>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Meta CAPI</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              {hasMetaCapi ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  <span className="text-sm text-green-500 font-medium">Ativo</span>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-sm text-red-500 font-medium">Inativo</span>
                 </>
               )}
             </div>
@@ -57,12 +135,12 @@ export default async function TrackingSetupPage() {
               {hasGoogleAnalytics ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-green-500 font-medium">Configurado</span>
+                  <span className="text-sm text-green-500 font-medium">Ativo</span>
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm text-yellow-500 font-medium">Não configurado</span>
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-sm text-red-500 font-medium">Inativo</span>
                 </>
               )}
             </div>
@@ -78,12 +156,12 @@ export default async function TrackingSetupPage() {
               {hasGoogleAds ? (
                 <>
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-green-500 font-medium">Configurado</span>
+                  <span className="text-sm text-green-500 font-medium">Ativo</span>
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-5 h-5 text-yellow-500" />
-                  <span className="text-sm text-yellow-500 font-medium">Não configurado</span>
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <span className="text-sm text-red-500 font-medium">Inativo</span>
                 </>
               )}
             </div>
@@ -94,39 +172,33 @@ export default async function TrackingSetupPage() {
       {/* Meta Pixel Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code2 className="w-5 h-5" />
-            Meta Pixel (Facebook Ads)
-          </CardTitle>
-          <CardDescription>
-            Configure o Meta Pixel para rastrear conversões do Facebook e Instagram Ads
-          </CardDescription>
+          <CardTitle>Meta Pixel</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Pixel ID:</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm">
-              {trackingConfig.metaPixelId || "Não configurado"}
+            <p className="text-sm font-medium mb-2">Pixel ID</p>
+            <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+              {hasMetaPixel ? trackingConfig.metaPixelId : "❌ Não configurado"}
             </code>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2">Eventos Implementados:</p>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>PageView - Visualização de página</li>
-              <li>Lead - Quando o formulário é enviado</li>
-            </ul>
+            <p className="text-sm font-medium mb-2">Evento</p>
+            <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+              Lead
+            </code>
           </div>
 
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2">Como Configurar:</p>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Acesse o Meta Events Manager</li>
-              <li>Selecione seu Pixel</li>
-              <li>Vá em Configurações {">"} Conversões</li>
-              <li>O evento &quot;Lead&quot; já está sendo enviado automaticamente</li>
-              <li>Configure regras de conversão conforme necessário</li>
-            </ol>
+          <div>
+            <p className="text-sm font-medium mb-2">Events Manager</p>
+            <a
+              href="https://business.facebook.com/events_manager"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              business.facebook.com/events_manager
+            </a>
           </div>
         </CardContent>
       </Card>
@@ -134,38 +206,33 @@ export default async function TrackingSetupPage() {
       {/* Google Analytics Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code2 className="w-5 h-5" />
-            Google Analytics 4
-          </CardTitle>
-          <CardDescription>
-            Acompanhe o comportamento dos usuários e conversões
-          </CardDescription>
+          <CardTitle>Google Analytics 4</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Measurement ID:</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm">
-              {trackingConfig.googleAnalyticsId || "Não configurado"}
+            <p className="text-sm font-medium mb-2">Measurement ID</p>
+            <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+              {hasGoogleAnalytics ? trackingConfig.googleAnalyticsId : "❌ Não configurado"}
             </code>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2">Eventos Implementados:</p>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>page_view - Visualizações de página automáticas</li>
-              <li>generate_lead - Quando o formulário é enviado</li>
-            </ul>
+            <p className="text-sm font-medium mb-2">Evento</p>
+            <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+              generate_lead
+            </code>
           </div>
 
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2">Como Visualizar:</p>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Acesse o Google Analytics</li>
-              <li>Vá em Relatórios {">"} Conversões</li>
-              <li>Configure &quot;generate_lead&quot; como evento de conversão</li>
-              <li>Visualize os dados em tempo real</li>
-            </ol>
+          <div>
+            <p className="text-sm font-medium mb-2">Console</p>
+            <a
+              href="https://analytics.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              analytics.google.com
+            </a>
           </div>
         </CardContent>
       </Card>
@@ -173,37 +240,35 @@ export default async function TrackingSetupPage() {
       {/* Google Ads Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code2 className="w-5 h-5" />
-            Google Ads
-          </CardTitle>
-          <CardDescription>
-            Rastreie conversões para otimizar suas campanhas do Google Ads
-          </CardDescription>
+          <CardTitle>Google Ads</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm font-medium mb-2">Conversion ID:</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm">
-              {trackingConfig.googleAds.conversionId || "Não configurado"}
-            </code>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium mb-2">Conversion ID</p>
+              <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+                {trackingConfig.googleAds.conversionId || "❌ Não configurado"}
+              </code>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium mb-2">Conversion Label</p>
+              <code className="block p-3 bg-muted rounded-md font-mono text-sm">
+                {trackingConfig.googleAds.conversionLabel || "❌ Não configurado"}
+              </code>
+            </div>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2">Conversion Label:</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm">
-              {trackingConfig.googleAds.conversionLabel || "Não configurado"}
-            </code>
-          </div>
-
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2">Como Configurar:</p>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Acesse o Google Ads</li>
-              <li>Vá em Ferramentas {">"} Conversões</li>
-              <li>As conversões serão rastreadas automaticamente quando configuradas</li>
-              <li>Vincule com o Google Analytics para dados completos</li>
-            </ol>
+            <p className="text-sm font-medium mb-2">Console</p>
+            <a
+              href="https://ads.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary hover:underline"
+            >
+              ads.google.com
+            </a>
           </div>
         </CardContent>
       </Card>
@@ -212,53 +277,31 @@ export default async function TrackingSetupPage() {
       <Card>
         <CardHeader>
           <CardTitle>Parâmetros UTM</CardTitle>
-          <CardDescription>
-            Use estes parâmetros nas suas URLs de campanha para rastreamento preciso
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Exemplo de URL com UTM:</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm break-all">
-              https://seusite.com.br?utm_source=facebook&utm_medium=cpc&utm_campaign=lancamento
+            <p className="text-sm font-medium mb-2">Exemplo</p>
+            <code className="block p-3 bg-muted rounded-md font-mono text-xs break-all">
+              https://3s-cars.com.br?utm_source=facebook&utm_medium=cpc&utm_campaign=detalhamento-jan-2025
             </code>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2">Parâmetros Capturados:</p>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>utm_source - Fonte do tráfego (facebook, google, instagram, etc)</li>
-              <li>utm_medium - Tipo de mídia (cpc, organic, social, email, etc)</li>
-              <li>utm_campaign - Nome da campanha</li>
-              <li>fbclid - Click ID do Facebook (automático)</li>
-              <li>gclid - Click ID do Google (automático)</li>
-            </ul>
+            <p className="text-sm font-medium mb-2">Parâmetros</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+              <code className="p-2 bg-muted/50 rounded">utm_source</code>
+              <code className="p-2 bg-muted/50 rounded">utm_medium</code>
+              <code className="p-2 bg-muted/50 rounded">utm_campaign</code>
+            </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Configuration Instructions */}
-      <Card className="border-primary/50 bg-primary/5">
-        <CardHeader>
-          <CardTitle>Como Adicionar/Alterar IDs de Tracking</CardTitle>
-          <CardDescription>
-            Para desenvolvedores: Configure os IDs no arquivo .env
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Variáveis de Ambiente (.env.local):</p>
-            <code className="block p-4 bg-muted rounded-md font-mono text-sm whitespace-pre">
-              {`NEXT_PUBLIC_META_PIXEL_ID=seu_pixel_id_aqui
-NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID=AW-XXXXXXXXX
-NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=xxxxx
-NEXT_PUBLIC_CLIENT_ID=default`}
-            </code>
+            <p className="text-sm font-medium mb-2">Click IDs (automático)</p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <code className="p-2 bg-muted/50 rounded">fbclid</code>
+              <code className="p-2 bg-muted/50 rounded">gclid</code>
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Após alterar as variáveis, reinicie o servidor de desenvolvimento.
-          </p>
         </CardContent>
       </Card>
     </div>
