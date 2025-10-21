@@ -24,34 +24,34 @@ export default async function TrackingSetupPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Setup de Tracking</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold mb-2 text-foreground">Setup de Tracking</h1>
+        <p className="text-foreground/70">
           Informações para configurar suas campanhas de tráfego pago
         </p>
       </div>
 
       {/* Informações para Campanha */}
-      <Card className="border-primary bg-primary/5">
+      <Card className="border-blue-500 bg-blue-50 dark:bg-blue-950/30">
         <CardHeader>
-          <CardTitle>Informações da Campanha</CardTitle>
+          <CardTitle className="text-foreground">Informações da Campanha</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* URL e Eventos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <p className="text-sm font-medium mb-2">URL da Landing Page</p>
-              <code className="block p-3 bg-background rounded-md font-mono text-sm">
+              <p className="text-sm font-medium mb-2 text-foreground">URL da Landing Page</p>
+              <code className="block p-3 bg-white dark:bg-gray-800 rounded-md font-mono text-sm text-foreground border">
                 https://3s-cars.com.br
               </code>
             </div>
 
             <div>
-              <p className="text-sm font-medium mb-2">Evento de Conversão</p>
+              <p className="text-sm font-medium mb-2 text-foreground">Evento de Conversão</p>
               <div className="space-y-2">
-                <code className="block p-2 bg-background rounded-md font-mono text-sm">
+                <code className="block p-2 bg-white dark:bg-gray-800 rounded-md font-mono text-sm text-foreground border">
                   Meta: <strong>Lead</strong>
                 </code>
-                <code className="block p-2 bg-background rounded-md font-mono text-sm">
+                <code className="block p-2 bg-white dark:bg-gray-800 rounded-md font-mono text-sm text-foreground border">
                   Google: <strong>generate_lead</strong>
                 </code>
               </div>
@@ -59,24 +59,24 @@ export default async function TrackingSetupPage() {
           </div>
 
           {/* Tracking Ativo */}
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-3">Tracking Ativo</p>
+          <div className="border-t border-blue-200 dark:border-blue-800 pt-4">
+            <p className="text-sm font-medium mb-3 text-foreground">Tracking Ativo</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-              <div className="p-2 bg-background rounded border">Meta Pixel</div>
-              <div className="p-2 bg-background rounded border">Meta CAPI</div>
-              <div className="p-2 bg-background rounded border">Google Analytics</div>
-              <div className="p-2 bg-background rounded border">Google Ads</div>
+              <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-foreground font-medium">Meta Pixel</div>
+              <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-foreground font-medium">Meta CAPI</div>
+              <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-foreground font-medium">Google Analytics</div>
+              <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-foreground font-medium">Google Ads</div>
             </div>
           </div>
 
           {/* Dados Capturados */}
-          <div className="border-t pt-4">
-            <p className="text-sm font-medium mb-2">Dados Capturados</p>
+          <div className="border-t border-blue-200 dark:border-blue-800 pt-4">
+            <p className="text-sm font-medium mb-2 text-foreground">Dados Capturados</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <code className="p-2 bg-background rounded">name, email, phone</code>
-              <code className="p-2 bg-background rounded">utm_source, utm_medium, utm_campaign</code>
-              <code className="p-2 bg-background rounded">fbclid, gclid</code>
-              <code className="p-2 bg-background rounded">ip_address, user_agent</code>
+              <code className="p-2 bg-white dark:bg-gray-800 rounded text-foreground border border-gray-300 dark:border-gray-700">name, email, phone</code>
+              <code className="p-2 bg-white dark:bg-gray-800 rounded text-foreground border border-gray-300 dark:border-gray-700">utm_source, utm_medium, utm_campaign</code>
+              <code className="p-2 bg-white dark:bg-gray-800 rounded text-foreground border border-gray-300 dark:border-gray-700">fbclid, gclid</code>
+              <code className="p-2 bg-white dark:bg-gray-800 rounded text-foreground border border-gray-300 dark:border-gray-700">ip_address, user_agent</code>
             </div>
           </div>
         </CardContent>
