@@ -3,9 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { siteConfig } from "@/config/site.config";
-import SafeAnalytics from "@/components/tracking/safe-analytics";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -51,9 +48,6 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <Toaster />
-        <SafeAnalytics />
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

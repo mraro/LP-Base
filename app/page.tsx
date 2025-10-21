@@ -1,4 +1,4 @@
-import CourseCapturePage from "./_components/course-capture-page";
+import HomePageWrapper from "./_components/home-page-wrapper";
 
 export const metadata = {
   title: "Aprenda a Faturar Hoje com Estética Automotiva | 3S Cars",
@@ -7,5 +7,5 @@ export const metadata = {
 };
 
 export default function Home() {
-  return <CourseCapturePage />;
+  return <HomePageWrapper />;
 }
