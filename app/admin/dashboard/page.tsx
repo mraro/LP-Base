@@ -69,8 +69,8 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold mb-2 text-white">Dashboard</h1>
+        <p className="text-white/80">
           Bem-vindo ao painel administrativo. Aqui você pode visualizar todas as métricas.
         </p>
       </div>

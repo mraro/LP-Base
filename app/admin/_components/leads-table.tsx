@@ -122,20 +122,20 @@ export function LeadsTable({ leads }: LeadsTableProps) {
   return (
     <div className="space-y-4">
       {/* Tabela */}
-      <div className="overflow-x-auto border rounded-lg">
+      <div className="overflow-x-auto border rounded-lg bg-white dark:bg-gray-900">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[200px]">
+            <TableRow className="bg-gray-50 dark:bg-gray-800">
+              <TableHead className="w-[200px] text-gray-700 dark:text-gray-200">
                 <SortButton field="name">Nome</SortButton>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-200">
                 <SortButton field="email">Contato</SortButton>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-200">
                 <SortButton field="source">Origem</SortButton>
               </TableHead>
-              <TableHead className="w-[160px]">
+              <TableHead className="w-[160px] text-gray-700 dark:text-gray-200">
                 <SortButton field="created_at">Data</SortButton>
               </TableHead>
             </TableRow>
@@ -143,13 +143,13 @@ export function LeadsTable({ leads }: LeadsTableProps) {
           <TableBody>
             {paginatedLeads.length > 0 ? (
               paginatedLeads.map((lead) => (
-                <TableRow key={lead.id} className="hover:bg-muted/50">
-                  <TableCell className="font-medium">{lead.name}</TableCell>
+                <TableRow key={lead.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <TableCell className="font-medium text-gray-900 dark:text-gray-100">{lead.name}</TableCell>
                   <TableCell>
                     <div className="space-y-1">
                       <a
                         href={`mailto:${lead.email}`}
-                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                        className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       >
                         <Mail className="w-3 h-3" />
                         {lead.email}
@@ -157,7 +157,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                       {lead.phone && (
                         <a
                           href={`tel:${lead.phone}`}
-                          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                          className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         >
                           <Phone className="w-3 h-3" />
                           {lead.phone}
@@ -168,23 +168,23 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {lead.source && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                           {lead.source}
                         </Badge>
                       )}
                       {lead.medium && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300">
                           {lead.medium}
                         </Badge>
                       )}
                       {lead.campaign && (
-                        <Badge variant="outline" className="text-xs font-normal">
+                        <Badge variant="outline" className="text-xs font-normal border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300">
                           {lead.campaign}
                         </Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-3 h-3" />
                       {format(new Date(lead.created_at), "dd/MM/yy HH:mm", {
@@ -196,7 +196,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={4} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   Nenhum lead encontrado
                 </TableCell>
               </TableRow>
@@ -208,9 +208,9 @@ export function LeadsTable({ leads }: LeadsTableProps) {
       {/* Paginação e Controles */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground">Linhas por página:</p>
+          <p className="text-sm text-white/80">Linhas por página:</p>
           <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
-            <SelectTrigger className="w-[70px]">
+            <SelectTrigger className="w-[70px] bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -223,7 +223,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/80">
             Página {currentPage} de {totalPages} ({sortedLeads.length} leads)
           </p>
           <div className="flex items-center gap-2">

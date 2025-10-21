@@ -51,8 +51,8 @@ export default async function LeadsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Leads</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold mb-2 text-white">Leads</h1>
+          <p className="text-white/80">
             {totalLeads} {totalLeads === 1 ? "lead capturado" : "leads capturados"}
           </p>
         </div>

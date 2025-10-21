@@ -24,8 +24,8 @@ export default async function TrackingSetupPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2 text-foreground">Setup de Tracking</h1>
-        <p className="text-foreground/70">
+        <h1 className="text-3xl font-bold mb-2 text-white">Setup de Tracking</h1>
+        <p className="text-white/80">
           Informações para configurar suas campanhas de tráfego pago
         </p>
       </div>
