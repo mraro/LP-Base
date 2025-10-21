@@ -17,8 +17,8 @@ import {
 
 export default function LeadThankyouPage() {
   const whatsappGroupLink = "https://chat.whatsapp.com/FaSn3EatHJyGXndgeLWK0s";
-  const instagramLink = "https://www.instagram.com/3scars_scs/";
-  const facebookLink = "https://web.facebook.com/3scarsscs";
+  const instagramLink = "https://instagram.com/3scars_scs";
+  const facebookLink = "https://facebook.com/3scarsscs";
   const tiktokLink = "https://tiktok.com/@3scarsscs";
   const youtubeLink = "https://www.youtube.com/@3scars_scs";
 

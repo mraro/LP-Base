@@ -7,7 +7,7 @@
 
 ## Context
 
-Criar uma página de obrigado profissional e humanizada para compradores do curso "Aprenda a Faturar Hoje com Estética Automotiva" da 3SCAR, baseada nas informações da reunião de planejamento do lançamento.
+Criar uma página de obrigado profissional e humanizada para compradores do curso "Aprenda a Faturar Hoje com Estética Automotiva" da 3S Cars, baseada nas informações da reunião de planejamento do lançamento.
 
 ### Requisitos do Cliente
 - Página única sem scroll
@@ -26,7 +26,7 @@ Criar uma página de obrigado profissional e humanizada para compradores do curs
 
 ### Phase 2: Conteúdo e Design ✅
 - [x] Header com troféu e mensagem de celebração
-- [x] Logo da 3SCAR
+- [x] Logo da 3S Cars
 - [x] Seção "Próximos Passos" (3 itens)
 - [x] Seção "Seus Presentes Especiais" (comentada para uso futuro)
 - [x] CTA WhatsApp para suporte
@@ -184,7 +184,7 @@ const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 - Tailwind CSS v4
 
 ### Assets
-- `/images/logo.jpg` (logo da 3SCAR)
+- `/images/logo.jpg` (logo da 3S Cars)
 
 ## Files Created/Modified
 

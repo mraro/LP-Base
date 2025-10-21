@@ -42,7 +42,7 @@ Criar uma experiência mais envolvente e profissional:
 - [ ] **CTAs**:
   - WhatsApp para dúvidas imediatas
   - Links para Instagram/Facebook
-  - Explorar mais sobre a 3SCAR
+  - Explorar mais sobre a 3S Cars
 - [ ] **Tom**: Acolhedor e informativo (não celebrativo como compra)
 
 ### Phase 3: Modificar CourseLeadForm
@@ -181,7 +181,7 @@ import type { Metadata } from "next";
 import LeadThankyouPage from "@/app/_components/lead-thankyou-page";
 
 export const metadata: Metadata = {
-  title: "Obrigado! | 3SCAR",
+  title: "Obrigado! | 3S Cars",
   description: "Obrigado pelo seu interesse no curso de Estética Automotiva!",
   robots: "noindex, nofollow", // Não indexar página de thank you
 };
@@ -284,7 +284,7 @@ export default function LeadThankyouPage() {
                 </p>
                 <div className="flex gap-3 mt-3">
                   <a
-                    href="https://instagram.com/3scar"
+                    href="https://instagram.com/3scars_scs"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm font-medium text-pink-600 hover:text-pink-700 transition"
@@ -293,7 +293,7 @@ export default function LeadThankyouPage() {
                     Instagram
                   </a>
                   <a
-                    href="https://facebook.com/3scar"
+                    href="https://facebook.com/3scarsscs"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition"
@@ -461,7 +461,7 @@ app/_components/course-lead-form.tsx
 - [ ] A/B testing de diferentes mensagens
 - [ ] Personalização baseada em UTM parameters
 - [ ] Countdown timer para retorno do time
-- [ ] Video de apresentação da 3SCAR
+- [ ] Video de apresentação da 3S Cars
 - [ ] Testimonials de alunos na página de obrigado
 - [ ] Opção de agendar call diretamente (Calendly)
 

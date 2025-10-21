@@ -179,7 +179,7 @@ export default function CourseCapturePage() {
                   <br />
                   O{" "}
                   <span className="font-bold text-orange-400">
-                    Método 3SCAR
+                    Método 3S CARS
                   </span>{" "}
                   é direto, prático e feito para quem quer{" "}
                   <span className="font-bold text-orange-400">

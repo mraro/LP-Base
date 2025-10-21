@@ -182,7 +182,7 @@ export default function CourseThankyouPage() {
               >
                 Bem-vindo à família{" "}
                 <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-orange-600 bg-clip-text text-transparent">
-                  3SCAR
+                  3S Cars
                 </span>
               </motion.h1>
 

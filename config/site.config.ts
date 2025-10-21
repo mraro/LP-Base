@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "3S Cars",
   description: "Transforme sua paixão por carros em R$10 mil por mês com estética automotiva",
-  url: "https://3scars.com.br",
+  url: "https://3s-cars.com.br",
 
   // Customização visual
   theme: {
