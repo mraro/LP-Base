@@ -16,9 +16,9 @@ import {
 
 export default function CourseCapturePage() {
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-gray-900">
       {/* Background Image with Overlay */}
-      <div className="fixed inset-0 z-0 h-screen w-full bg-gray-900 md:absolute">
+      <div className="absolute inset-0 z-0 h-full w-full bg-gray-900" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <Image
           src="/images/car-detailing-hero.png"
           alt="Carro com pintura impecável"
@@ -46,7 +46,7 @@ export default function CourseCapturePage() {
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
             >
               <motion.div
-                className="group relative rounded-2xl border border-white/10 bg-white/95 p-6 shadow-2xl backdrop-blur-md transition-all duration-300 hover:shadow-orange-500/20 md:p-8"
+                className="group relative rounded-2xl border border-white/10 bg-white p-6 shadow-2xl transition-all duration-300 hover:shadow-orange-500/20 md:bg-white/95 md:backdrop-blur-md md:p-8"
                 whileHover={{ scale: 1.01 }}
                 transition={{ duration: 0.2 }}
               >

@@ -53,9 +53,11 @@
   * {
     @apply border-border;
   }
+  html,
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: #111827; /* bg-gray-900 para cobrir safe areas */
   }
 }
 
