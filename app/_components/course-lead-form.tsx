@@ -3,42 +3,99 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2,
-  CheckCircle2,
   ArrowRight,
   Zap,
   Send,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { leadFormSchema, type LeadFormData } from "@/lib/validators";
 
-// Form validation schema
-const courseLeadSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Nome deve ter pelo menos 3 caracteres")
-    .max(100, "Nome muito longo"),
-  email: z.string().email("Email inválido"),
-  phone: z
-    .string()
-    .min(10, "Telefone deve ter pelo menos 10 dígitos")
-    .max(15, "Telefone inválido")
-    .regex(
-      /^[\d\s\-\(\)\+]+$/,
-      "Telefone deve conter apenas números e caracteres válidos"
-    ),
-});
+type CourseLeadFormData = LeadFormData;
 
-type CourseLeadFormData = z.infer<typeof courseLeadSchema>;
+// Função para aplicar máscara de WhatsApp (internacional - qualquer país)
+const formatWhatsApp = (value: string): string => {
+  // Remove tudo que não é dígito
+  let digits = value.replace(/\D/g, "");
+
+  // Limita a 15 dígitos (padrão E.164)
+  digits = digits.slice(0, 15);
+
+  // Detecta formato brasileiro (55 + 10-11 dígitos OU sem código + 10-11 dígitos)
+  const isBrazilWithCode = digits.startsWith("55") && digits.length >= 12 && digits.length <= 13;
+  const isBrazilNational = !digits.startsWith("55") && digits.length >= 10 && digits.length <= 11;
+
+  // Formato brasileiro com código do país (+55)
+  if (isBrazilWithCode) {
+    const countryCode = digits.slice(0, 2); // 55
+    const ddd = digits.slice(2, 4); // DDD (2 dígitos)
+    const restDigits = digits.slice(4);
+
+    if (digits.length <= 4) {
+      return `+${countryCode} ${ddd}`;
+    } else if (digits.length <= 9) {
+      return `+${countryCode} (${ddd}) ${restDigits}`;
+    } else {
+      const isCellphone = digits.length === 13; // 13 dígitos = celular com 9
+      const firstPart = isCellphone ? restDigits.slice(0, 5) : restDigits.slice(0, 4);
+      const secondPart = isCellphone ? restDigits.slice(5, 9) : restDigits.slice(4, 8);
+      return `+${countryCode} (${ddd}) ${firstPart}${secondPart ? `-${secondPart}` : ""}`;
+    }
+  }
+
+  // Formato brasileiro nacional (sem código do país)
+  if (isBrazilNational) {
+    if (digits.length <= 2) {
+      return digits;
+    } else if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else {
+      const ddd = digits.slice(0, 2);
+      const firstPart = digits.length === 11 ? digits.slice(2, 7) : digits.slice(2, 6);
+      const secondPart = digits.length === 11 ? digits.slice(7, 11) : digits.slice(6, 10);
+      return `(${ddd}) ${firstPart}${secondPart ? `-${secondPart}` : ""}`;
+    }
+  }
+
+  // Formato internacional genérico (outros países)
+  // Formato: +XX XXX XXX XXXX (divide em grupos)
+  if (digits.length >= 7) {
+    // Detecta tamanho do código do país (1-3 dígitos)
+    let countryCodeLength = 1;
+    if (digits.startsWith("1")) countryCodeLength = 1; // EUA/Canadá
+    else if (digits.startsWith("44")) countryCodeLength = 2; // UK
+    else if (digits.startsWith("351") || digits.startsWith("352")) countryCodeLength = 3; // Portugal, Luxembourg
+    else if (parseInt(digits.slice(0, 2)) >= 30 && parseInt(digits.slice(0, 2)) <= 49) countryCodeLength = 2; // Europa (maioria)
+    else if (parseInt(digits.slice(0, 3)) >= 200) countryCodeLength = 3; // Códigos de 3 dígitos
+
+    const countryCode = digits.slice(0, countryCodeLength);
+    const number = digits.slice(countryCodeLength);
+
+    // Formata: +CC XXX XXX XXXX
+    if (number.length <= 3) {
+      return `+${countryCode} ${number}`;
+    } else if (number.length <= 6) {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3)}`;
+    } else if (number.length <= 10) {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6)}`;
+    } else {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6, 10)}`;
+    }
+  }
+
+  // Números muito curtos (menos de 7 dígitos) - retorna sem formatação
+  return digits;
+};
 
 export default function CourseLeadForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
   const { toast } = useToast();
 
   const {
@@ -46,9 +103,16 @@ export default function CourseLeadForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<CourseLeadFormData>({
-    resolver: zodResolver(courseLeadSchema),
+    resolver: zodResolver(leadFormSchema),
   });
+
+  // Aplicar máscara ao digitar
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatWhatsApp(e.target.value);
+    setValue("phone", formatted);
+  };
 
   const onSubmit = async (data: CourseLeadFormData) => {
     setIsSubmitting(true);
@@ -80,8 +144,11 @@ export default function CourseLeadForm() {
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error("Erro ao enviar formulário");
+        // Exibir mensagem específica do servidor (duplicatas, validação, etc.)
+        throw new Error(result.message || "Erro ao enviar formulário");
       }
 
       // Fire tracking events
@@ -106,14 +173,16 @@ export default function CourseLeadForm() {
         }
       }
 
-      setIsSuccess(true);
+      // Reset form and redirect to thank you page
       reset();
+      router.push("/ty");
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
         title: "Erro ao enviar",
-        description:
-          "Ocorreu um erro ao processar sua inscrição. Tente novamente.",
+        description: error instanceof Error
+          ? error.message
+          : "Ocorreu um erro ao processar sua inscrição. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -123,38 +192,10 @@ export default function CourseLeadForm() {
 
   return (
     <div className="space-y-5">
-      <AnimatePresence mode="wait">
-        {isSuccess ? (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="py-8 text-center"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 mx-auto"
-            >
-              <CheckCircle2 className="h-10 w-10 text-green-600" />
-            </motion.div>
-            <h4 className="mt-4 text-xl font-bold text-gray-900">
-              Inscrição Confirmada!
-            </h4>
-            <p className="mt-2 text-sm text-gray-600">
-              Em breve entraremos em contato com você.
-            </p>
-          </motion.div>
-        ) : (
-          <motion.form
-            key="form"
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-5"
+      >
           {/* Name Field */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
@@ -221,6 +262,7 @@ export default function CourseLeadForm() {
               type="tel"
               placeholder="(51) 99999-9999"
               {...register("phone")}
+              onChange={handlePhoneChange}
               className={`h-12 border-2 transition-all ${
                 errors.phone
                   ? "border-red-500 focus:border-red-500"
@@ -282,9 +324,7 @@ export default function CourseLeadForm() {
             <Zap className="h-2.5 w-2.5 text-yellow-500 md:h-3 md:w-3" />
             <span>Inscreva-se agora e receba acesso imediato</span>
           </motion.div>
-        </motion.form>
-        )}
-      </AnimatePresence>
+      </form>
     </div>
   );
 }

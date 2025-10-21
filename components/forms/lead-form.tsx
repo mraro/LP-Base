@@ -12,6 +12,80 @@ import { siteConfig } from "@/config/site.config";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
+// Função para aplicar máscara de WhatsApp (internacional - qualquer país)
+const formatWhatsApp = (value: string): string => {
+  // Remove tudo que não é dígito
+  let digits = value.replace(/\D/g, "");
+
+  // Limita a 15 dígitos (padrão E.164)
+  digits = digits.slice(0, 15);
+
+  // Detecta formato brasileiro (55 + 10-11 dígitos OU sem código + 10-11 dígitos)
+  const isBrazilWithCode = digits.startsWith("55") && digits.length >= 12 && digits.length <= 13;
+  const isBrazilNational = !digits.startsWith("55") && digits.length >= 10 && digits.length <= 11;
+
+  // Formato brasileiro com código do país (+55)
+  if (isBrazilWithCode) {
+    const countryCode = digits.slice(0, 2); // 55
+    const ddd = digits.slice(2, 4); // DDD (2 dígitos)
+    const restDigits = digits.slice(4);
+
+    if (digits.length <= 4) {
+      return `+${countryCode} ${ddd}`;
+    } else if (digits.length <= 9) {
+      return `+${countryCode} (${ddd}) ${restDigits}`;
+    } else {
+      const isCellphone = digits.length === 13; // 13 dígitos = celular com 9
+      const firstPart = isCellphone ? restDigits.slice(0, 5) : restDigits.slice(0, 4);
+      const secondPart = isCellphone ? restDigits.slice(5, 9) : restDigits.slice(4, 8);
+      return `+${countryCode} (${ddd}) ${firstPart}${secondPart ? `-${secondPart}` : ""}`;
+    }
+  }
+
+  // Formato brasileiro nacional (sem código do país)
+  if (isBrazilNational) {
+    if (digits.length <= 2) {
+      return digits;
+    } else if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else {
+      const ddd = digits.slice(0, 2);
+      const firstPart = digits.length === 11 ? digits.slice(2, 7) : digits.slice(2, 6);
+      const secondPart = digits.length === 11 ? digits.slice(7, 11) : digits.slice(6, 10);
+      return `(${ddd}) ${firstPart}${secondPart ? `-${secondPart}` : ""}`;
+    }
+  }
+
+  // Formato internacional genérico (outros países)
+  // Formato: +XX XXX XXX XXXX (divide em grupos)
+  if (digits.length >= 7) {
+    // Detecta tamanho do código do país (1-3 dígitos)
+    let countryCodeLength = 1;
+    if (digits.startsWith("1")) countryCodeLength = 1; // EUA/Canadá
+    else if (digits.startsWith("44")) countryCodeLength = 2; // UK
+    else if (digits.startsWith("351") || digits.startsWith("352")) countryCodeLength = 3; // Portugal, Luxembourg
+    else if (parseInt(digits.slice(0, 2)) >= 30 && parseInt(digits.slice(0, 2)) <= 49) countryCodeLength = 2; // Europa (maioria)
+    else if (parseInt(digits.slice(0, 3)) >= 200) countryCodeLength = 3; // Códigos de 3 dígitos
+
+    const countryCode = digits.slice(0, countryCodeLength);
+    const number = digits.slice(countryCodeLength);
+
+    // Formata: +CC XXX XXX XXXX
+    if (number.length <= 3) {
+      return `+${countryCode} ${number}`;
+    } else if (number.length <= 6) {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3)}`;
+    } else if (number.length <= 10) {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6)}`;
+    } else {
+      return `+${countryCode} ${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6, 10)}`;
+    }
+  }
+
+  // Números muito curtos (menos de 7 dígitos) - retorna sem formatação
+  return digits;
+};
+
 export default function LeadForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -22,9 +96,17 @@ export default function LeadForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadFormSchema),
   });
+
+  // Aplicar máscara ao digitar
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatWhatsApp(e.target.value);
+    setValue("phone", formatted);
+  };
 
   const onSubmit = async (data: LeadFormData) => {
     setIsSubmitting(true);
@@ -74,11 +156,12 @@ export default function LeadForm() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Erro ao enviar formulário");
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        // Exibir mensagem específica do servidor (duplicatas, validação, etc.)
+        throw new Error(result.message || "Erro ao enviar formulário");
+      }
 
       // Fire tracking events
       if (typeof window !== "undefined") {
@@ -107,7 +190,7 @@ export default function LeadForm() {
       console.error("Error submitting form:", error);
       toast({
         title: "Erro",
-        description: siteConfig.leadForm.errorMessage,
+        description: error instanceof Error ? error.message : siteConfig.leadForm.errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -205,6 +288,7 @@ export default function LeadForm() {
           type="tel"
           placeholder={siteConfig.leadForm.fields.phone.placeholder}
           {...register("phone")}
+          onChange={handlePhoneChange}
           className={errors.phone ? "border-destructive" : ""}
         />
         {errors.phone && (

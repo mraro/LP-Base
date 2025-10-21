@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { leadFormSchema } from "@/lib/validators";
+import { leadFormSchema, normalizeWhatsApp } from "@/lib/validators";
 import { trackingConfig } from "@/config/tracking.config";
 import { sendLeadEvent } from "@/lib/tracking/facebook-capi";
 
@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
 
     // Validate form data
     const validatedData = leadFormSchema.parse(body);
+
+    // Normalize WhatsApp (remove caracteres especiais, apenas dígitos)
+    const normalizedPhone = normalizeWhatsApp(validatedData.phone);
 
     // Get additional tracking data
     const { source, medium, campaign, fbclid, gclid } = body;
@@ -37,7 +40,7 @@ export async function POST(request: NextRequest) {
       .insert({
         name: validatedData.name,
         email: validatedData.email,
-        phone: validatedData.phone,
+        phone: normalizedPhone, // WhatsApp normalizado (apenas dígitos)
         message: validatedData.message || null,
         source: finalSource,
         medium: medium || null,
@@ -48,6 +51,31 @@ export async function POST(request: NextRequest) {
 
     if (leadError) {
       console.error("Error inserting lead:", leadError);
+
+      // Error handling: Unique constraint violation (duplicate entry)
+      // PostgreSQL error code 23505 = unique_violation
+      if (leadError.code === "23505") {
+        // Check which field caused the duplicate
+        if (leadError.message.includes("email")) {
+          return NextResponse.json(
+            { success: false, message: "Este e-mail já está cadastrado" },
+            { status: 400 }
+          );
+        }
+        if (leadError.message.includes("phone")) {
+          return NextResponse.json(
+            { success: false, message: "Este número de WhatsApp já está cadastrado" },
+            { status: 400 }
+          );
+        }
+        // Generic duplicate error
+        return NextResponse.json(
+          { success: false, message: "Este cadastro já existe" },
+          { status: 400 }
+        );
+      }
+
+      // Generic database error
       throw new Error("Failed to save lead");
     }
 
@@ -77,15 +105,31 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error processing lead:", error);
 
-    if (error instanceof Error && error.message.includes("validation")) {
+    // Zod validation errors
+    if (error && typeof error === "object" && "issues" in error) {
+      const zodError = error as { issues: Array<{ path: string[]; message: string }> };
+      const firstError = zodError.issues[0];
+
       return NextResponse.json(
-        { success: false, message: "Invalid form data" },
+        {
+          success: false,
+          message: firstError?.message || "Dados do formulário inválidos"
+        },
         { status: 400 }
       );
     }
 
+    // Generic validation errors
+    if (error instanceof Error && error.message.includes("validation")) {
+      return NextResponse.json(
+        { success: false, message: "Dados do formulário inválidos" },
+        { status: 400 }
+      );
+    }
+
+    // Generic server errors (user-friendly message)
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: "Ocorreu um erro ao realizar sua inscrição. Por favor, tente novamente." },
       { status: 500 }
     );
   }

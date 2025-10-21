@@ -2,7 +2,7 @@
 
 **Project**: 3S-CARS Landing Page - Modern automotive services landing page
 **Tech Stack**: Next.js 15, React 19, TypeScript, Tailwind CSS, Supabase, NextAuth, Framer Motion, GSAP
-**Updated**: 2025-10-16
+**Updated**: 2025-10-21
 
 ---
 
@@ -92,6 +92,10 @@
 **When created**:
 - Via `/jitd:update-doc feature TASK-XX` after completing feature
 - OR manually when starting major feature (planning phase)
+
+**Current Tasks**:
+- [TASK-01: Página de Obrigado Pós-Compra do Curso](./tasks/TASK-01-course-thankyou-page.md) - ✅ Completed (2025-10-21)
+- [TASK-02: Redirecionamento para Página de Obrigado Pós-Lead (/ty)](./tasks/TASK-02-lead-form-thankyou-redirect.md) - ✅ Completed (2025-10-21)
 
 **Template structure**:
 ```markdown
@@ -360,5 +364,5 @@ After completing feature, archives implementation plan and updates system docs
 
 **This documentation system transforms your tickets into living knowledge while keeping AI context efficient.**
 
-**Last Updated**: 2025-10-16
+**Last Updated**: 2025-10-21
 **Powered By**: JITD (Just-In-Time Documentation)
